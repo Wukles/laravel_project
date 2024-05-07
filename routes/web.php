@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MainController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +16,30 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+//article
+Route::resource('article', ArticleController::class)->middleware('auth:sanctum');
+
+//comments
+Route::controller(CommentController::class)->group(function(){
+    Route::post('/comment', 'store')->middleware('auth:sanctum');
+    Route::get('/comment/edit/{comment}', 'edit');
+    Route::get('/comment/delete/{comment}', 'delete');
+
+});
+
+//auth
+Route::get('signin', [AuthController::class, 'signin']);
+Route::post('registr', [AuthController::class, 'registr']);
+Route::get('signup', [AuthController::class, 'signup'])->name('login');
+Route::post('login', [AuthController::class, 'login']);
+Route::get('logout', [AuthController::class, 'logout']);
+
+
+//main
+Route::get('main', [MainController::class, 'index']);
+Route::get('galery/{img}', [MainController::class, 'show']);
+
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('layout');
 });
