@@ -4,7 +4,7 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Auth\Access\Responce;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use App\Models\Comment;
@@ -30,8 +30,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('comment', function(User $user, Comment $comment){
-            if($user->id == $comment->user_id) return Response::alow();
-            else return Response::deny('You are not the author');
+            if ($user->id == $comment->user_id) return Response::allow();
+                else return Response::deny("You are not the author");
         });
     }
 }

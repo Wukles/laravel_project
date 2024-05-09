@@ -35,7 +35,7 @@ class AuthController extends Controller
 
     function login(Request $request){
         $credentials = $request->validate([
-            'email' => 'required|email|unique:App\Models\User',
+            'email' => 'required|email|',
             'password' => 'required|min:6',
         ]);
             if(Auth::attempt($credentials)){
