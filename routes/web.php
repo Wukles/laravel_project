@@ -24,6 +24,9 @@ Route::controller(CommentController::class)->group(function(){
     Route::post('/comment', 'store')->middleware('auth:sanctum');
     Route::get('/comment/edit/{comment}', 'edit');
     Route::get('/comment/delete/{comment}', 'delete');
+    Route::get('/comment/index', 'index')->name('comment.index');
+    Route::get('/comment/{comment}/accept', 'accept');
+    Route::get('/comment/{comment}/reject', 'reject');
 
 });
 

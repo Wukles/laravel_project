@@ -24,6 +24,12 @@
     <h3>Comments</h3>
 </div>
 
+@if (session('res'))
+  <div class="alert-success">
+    <p>The comment was successfully added and submitted for moderation!</p>
+  </div>
+@endif
+
 @if ($errors->any())
   <div class="alert-danger">
     <ul>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Laravel</title>
@@ -8,12 +9,12 @@
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
   
-
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
         
 </head>
 <body class="antialiased">
 
-<header>
+<header style="background-color: #ccc;">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="/main">Navbar</a>
@@ -28,6 +29,9 @@
         @can('create')
         <li class="nav-item">
           <a class="nav-link" href="/article/create">Create article</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/comment/index">New comment</a>
         </li>
         @endcan
         <li class="nav-item dropdown">
@@ -57,6 +61,10 @@
 </header>
   <main>
     <div class="container">
+      <div id="app">
+        <App />
+      </div>
+
     @yield('content')
     </div>
   </main>
