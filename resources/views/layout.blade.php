@@ -34,17 +34,18 @@
           <a class="nav-link" href="/comment/index">New comment</a>
         </li>
         @endcan
+        @auth
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+            Notify <span>{{auth()->user()->unreadNotifications()->count()}}</span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
+            @foreach(auth()->user()->unreadNotifications as $notify)
+            <li><a class="dropdown-item" href="{{route('article.show',['article'=>$notify->data['idArticle'], 'id_notify'=>$notify->id])}}">{{$notify->data['titleComment']}}</a></li>
+            @endforeach
           </ul>
         </li>
+        @endauth
       </ul>
       <div class="d-flex" role="search">
         @guest

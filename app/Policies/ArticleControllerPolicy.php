@@ -31,7 +31,7 @@ class ArticleControllerPolicy
     {
         return ($user->role == 'moderator') ?
         Response::allow :
-        Responce::deny('You are not a moderator');
+        Response::deny('You are not a moderator');
     }
 
     /**

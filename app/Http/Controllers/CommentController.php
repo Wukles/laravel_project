@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use App\Jobs\VeryLongJob;
+use App\Notifications\CommentNotify;
 
 class CommentController extends Controller
 {
@@ -29,13 +32,16 @@ class CommentController extends Controller
         ]);
 
         $article = Article::findOrFail($request->article_id);
+
         $comment = new Comment;
         $comment->title = $request->title;
         $comment->desc = $request->desc;
         $comment->user_id = auth()->id();
         $comment->article_id = $request->article_id;
         $res = $comment->save();
-        if ($res) VeryLongJob::dispatch($comment, $article);
+        if ($res) {
+            VeryLongJob::dispatch($comment, $article);
+        }
         return redirect()->route('article.show', ['article'=>$request->article_id])->with(['res'=>$res]);
     }
 
@@ -51,7 +57,10 @@ class CommentController extends Controller
 
     public function accept(Comment $comment){
         $comment->accept = true;
-        $comment->save();
+        $users = User::where('id', '!=', $comment->user_id)->get();
+        Log::alert($users);
+        $res = $comment->save();
+        if ($res) Notification::send($users, new CommentNotify($comment->title, $comment->article_id));
         return redirect()->route('comment.index');
     }
 
