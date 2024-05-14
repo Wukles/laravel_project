@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use App\Jobs\VeryLongJob;
 use App\Notifications\CommentNotify;
@@ -16,16 +17,19 @@ use App\Notifications\CommentNotify;
 class CommentController extends Controller
 {
     public function index(){
-        $comments = DB::table('comments')
-                ->join('articles', 'articles.id', 'comments.article_id')
-                ->join('users', 'users.id', 'comments.user_id')
-                ->select('comments.*','articles.id as article_id', 'articles.title as article', 'users.name')
-                ->get();
+        $comments = Cache::rememberForever('comments', function(){
+            return $comments = DB::table('comments')
+            ->join('articles', 'articles.id', 'comments.article_id')
+            ->join('users', 'users.id', 'comments.user_id')
+            ->select('comments.*','articles.id as article_id', 'articles.title as article', 'users.name')
+            ->get();
+        });
         //Log::alert($comments);
         return view('comment.index', ['comments' => $comments]);
     }
 
     public function store(Request $request){
+        Cache::forget('comments');
         $request->validate([
             'title'=>'required|min:5',
             'desc'=>'required'
@@ -56,15 +60,19 @@ class CommentController extends Controller
     }
 
     public function accept(Comment $comment){
+        Cache::forget('comments');
+        Cache::forget('article_comment'.$comment->article_id);
         $comment->accept = true;
         $users = User::where('id', '!=', $comment->user_id)->get();
-        Log::alert($users);
+        //Log::alert($users);
         $res = $comment->save();
         if ($res) Notification::send($users, new CommentNotify($comment->title, $comment->article_id));
         return redirect()->route('comment.index');
     }
 
     public function reject(Comment $comment){
+        Cache::forget('comments');
+        Cache::forget('article_comment'.$comment->article_id);
         $comment->accept = false;
         $comment->save();
         return redirect()->route('comment.index');
