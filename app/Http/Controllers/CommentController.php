@@ -51,12 +51,41 @@ class CommentController extends Controller
 
     public function edit(Comment $comment){
         Gate::authorize('comment', ['comment'=>$comment]);
-        return view('comment.update', ['comment'=>$comment]);
+        return view('comment.edit', ['comment'=>$comment]);
     }
 
+    public function update(Request $request, Comment $comment)
+{
+    Cache::flush();
+    Gate::authorize('comemnt', ['comment'=>$comment]);
+    $request->validate([
+        'title'=>'required|min:5',
+        'text'=>'required'
+    ]);
+
+    $comment->title = $request->title;
+    $comment->desc = $request->text; 
+    $res = $comment->save();
+
+    if ($res){
+        $keys = DB::table('cache')->whereRaw('`key` GLOB :key', ['key'=>'commentAll:article*[0-9]/*[0-9]'])->get();
+        foreach($keys as $key){
+            Cache::forget($key->key);
+        }
+    }
+    
+    return redirect()->route('article.show', ['article' => $comment->article->id]);
+}
+
     public function delete(Comment $comment){
-        Gate::authorize('comment', ['comment'=>$comment]);
-        return view('article.show', ['article'=>1]);
+        
+        //$comment = Comment::findOrFail($id);
+        Gate::authorize('comment', $comment);
+        $comment->delete();
+        Cache::forget('comments');
+        Cache::forget('article_comment'.$comment->article_id);
+        // $comment = NULL;
+        return redirect()->route('article.show', ['article'=>$comment->article_id]);
     }
 
     public function accept(Comment $comment){

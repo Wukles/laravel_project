@@ -15,7 +15,7 @@
 <form action="/article/{{$article->id}}" method="post">
     @METHOD('PUT')
   @csrf
-<div class="mb-3">
+<div class="mb-3 mt-2">
     <label for="date" class="form-label">Date</label>
     <input type="date" class="form-control" id="date" name='date' value="{{$article->date}}">
   </div>

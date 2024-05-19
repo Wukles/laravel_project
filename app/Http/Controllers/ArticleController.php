@@ -42,7 +42,7 @@ class ArticleController extends Controller
     {
         $keys = DB::table('cache')
                 ->select('key')
-                ->whereRaw('`key` GLOB :key', [':key' => 'articles*[0-9]'])->get();
+                ->whereRaw('`key` GLOB :key', [':key' => 'articleA*[0-9]'])->get();
         foreach($keys as $key){
         Cache::forget($key->key);
         }
@@ -95,7 +95,7 @@ class ArticleController extends Controller
     {
         $keys = DB::table('cache')
                 ->select('key')
-                ->whereRaw('`key` GLOB :key', [':key' => 'articles*[0-9]'])->get();
+                ->whereRaw('`key` GLOB :key', [':key' => 'articles:*[0-9]'])->get();
         foreach($keys as $key){
         Cache::forget($key->key);
         }
@@ -123,7 +123,22 @@ class ArticleController extends Controller
     {
         Cache::flush();
         Gate::authorize('create', [self::class]);
-        $article->delete();
-        return  redirect()->route('article.index');
+
+        Comment::where('article_id', $article->id)->delete();
+        $res = $article->delete();
+
+        // if ($res){
+        //     $keys = DB::table('cache')->whereRaw('`key` GLOB :key', [':key'=>'articleAll:*[0-9]'])->get();
+        //     foreach ($keys as $key){
+        //        Cache::forget($key->key); 
+        //     }
+        // }
+//------------------------------------------------------
+        // $currentPage = request('page') ? request('page') : 1;
+        // Cache::forget('articles'.$currentPage);
+        // Cache::forget('article_comment'.$article->id);
+
+
+        return redirect()->route('article.index');
     }
 }
