@@ -31,6 +31,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
+        Cache::flush();
         Gate::authorize('create', [self::class]);
         return view('article.create');
     }
